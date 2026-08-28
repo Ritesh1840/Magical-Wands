@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <title>Magical Wands · Hand-Drawn Interactive Garden</title>
+    <meta name="description" content="Cast spells with your hands in mid-air — Created by " />
+    <meta name="author" content="Rupam Kayal" />
+
+    <meta property="og:title" content="Magical Wands by Rupam Kayal" />
+    <meta property="og:description" content="Cast ethereal flowers, constellations & 3D light ribbons with your hands" />
+    <meta property="og:url" content="https://github.com/Ritesh1840/Magical-Wands" />
+    <meta property="og:site_name" content="Magical Wands" />
+    <meta property="og:type" content="website" />
+
+    <link rel="icon" href="./assets/flower-icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <!-- MediaPipe hand-tracking libraries (loaded before the app module runs) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="app-container" class="landing-state">
+        <!-- Hidden Webcam Element -->
+        <video id="webcam" autoplay playsinline muted></video>
+
+        <!-- Main Canvas Layer -->
+        <canvas id="output-canvas"></canvas>
+
+        <!-- LANDING SCREEN -->
+        <div id="landing-screen" class="screen-overlay">
+            <div class="landing-card glass-panel">
+                <div class="landing-badge">
+                    <span>✦ MAGICAL WANDS • GESTURAL SPELLCRAFT ✦</span>
+                </div>
+
+                <div class="magic-icon-badge">
+                    <img src="./assets/flower-icon.png" alt="Flower Icon" width="40" height="40" style="object-fit: contain" />
+                </div>
+
+                <div class="landing-text-content">
+                    <h1 class="landing-title">Magical Wands</h1>
+                    <p class="landing-subtitle">Cast ethereal flowers, constellations &amp; 3D light ribbons with your hands</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-item glass-panel-light">
+                        <span class="feature-icon">🌸</span>
+                        <div class="feature-info">
+                            <h3>Flower Bloom</h3>
+                            <p>Point index finger to plant flowers</p>
+                        </div>
+                    </div>
+                    <div class="feature-item glass-panel-light">
+                        <span class="feature-icon">✦</span>
+                        <div class="feature-info">
+                            <h3>Star Magic</h3>
+                            <p>Pinch fingers to spawn constellations</p>
+                        </div>
+                    </div>
+                    <div class="feature-item glass-panel-light">
+                        <span class="feature-icon">🎨</span>
+                        <div class="feature-info">
+                            <h3>Air Doodle</h3>
+                            <p>Draw luminous 3D light ribbons</p>
+                        </div>
+                    </div>
+                    <div class="feature-item glass-panel-light">
+                        <span class="feature-icon">⚡</span>
+                        <div class="feature-info">
+                            <h3>AI Vision</h3>
+                            <p>Real-time MediaPipe hand tracking</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="landing-specs-row">
+                    <span>📷 Webcam Required</span>
+                    <span>•</span>
+                    <span>🖱️ Mouse / Touch Fallback</span>
+                    <span>•</span>
+                    <span>✨ Zero Setup</span>
+                </div>
+
+                <div class="author-credit-row">
+                    <span>Crafted with ✨ by</span>
+                    <a href="https://github.com/Ritesh1840" target="_blank" rel="noopener noreferrer" class="author-link">
+                       Rupam Kayal
+                    </a>
+                </div>
+
+                <button id="start-btn" class="glass-btn primary-glass-btn">
+                    <span class="btn-icon">🔮</span>
+                    <span class="btn-text">START EXPERIENCE</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- CAMERA INTERFACE HUD (Active Mode) -->
+        <div id="camera-hud" class="hud-overlay hidden">
+
+            <!-- Top Bar Navigation & Wand Selectors -->
+            <header class="hud-header">
+
+                <div class="wand-selector-pill modern-border">
+                    <button class="wand-btn active" data-wand="flowers" title="Flower Wand">
+                        <img src="./assets/flower-icon.png" alt="Flower Wand" class="wand-icon-img" />
+                    </button>
+                    <button class="wand-btn" data-wand="stars" title="Star Wand">
+                        <img src="./assets/star.png" alt="Star Wand" class="wand-icon-img" />
+                    </button>
+                    <button class="wand-btn" data-wand="doodle" title="Sketch Wand">
+                        <svg class="wand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="header-tools">
+                    <a href="https://github.com/Ritesh1840" target="_blank" rel="noopener noreferrer" class="hud-brand-watermark">
+                        <span>✦ Magical Wands • by Rupam Kayal</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Recording Indicator (Top Right) -->
+            <div id="recording-badge" class="recording-indicator hidden">
+                <span class="red-dot pulse"></span>
+                <span id="recording-timer">00:00</span>
+            </div>
+
+            <!-- Bottom Camera Shutter Control Panel -->
+            <footer class="hud-footer">
+                <div class="instruction-bar">
+                    <span id="gesture-icon">🪄</span>
+                    <span id="gesture-text">Point to plant · Open your hand to scatter</span>
+                </div>
+
+                <div class="mode-tabs-pill modern-border">
+                    <button id="tab-photo" class="mode-tab active">PHOTO</button>
+                    <button id="tab-video" class="mode-tab">VIDEO</button>
+                </div>
+
+                <div class="shutter-wrapper">
+                    <button id="shutter-btn" class="shutter-btn" title="Take Photo or Start Recording">
+                        <div class="shutter-inner"></div>
+                    </button>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>
